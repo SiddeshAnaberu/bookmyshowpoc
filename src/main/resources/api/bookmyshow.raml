@@ -1,0 +1,91 @@
+#%RAML 1.0
+title: BookMyShow
+
+types:
+  Movie: !include datatypes/movie.raml
+  Screen: !include datatypes/screen.raml
+  SingleOrder: !include datatypes/single-order.raml
+  GroupOrder: !include datatypes/group-order.raml
+
+traits:
+  errTrait: !include traits/error-trait.raml
+  headerTrait: !include traits/header-trait.raml
+
+/movie:
+  get:
+    is:
+       [headerTrait]
+    queryParameters:
+      destination: 
+        required: true
+        enum:
+          - Mumbai
+          - Bengaluru
+          - Hyderabad
+      category: 
+        required: false
+        enum:
+          - Action
+          - Adventure
+          - Comedy
+          - Drama
+          - Thriller
+          - Horror
+    responses:
+      200:
+        body:
+          application/json:
+            type: Movie[]
+            examples: !include examples/movies-example.raml
+  /{ID}:
+    is:
+       [headerTrait]
+    get:
+      queryParameters:
+        destination: 
+          required: true
+          enum:
+            - Mumbai
+            - Bengaluru
+            - Hyderabad
+      responses:
+        200:
+          body:
+            application/json:
+              type: Screen[]
+              examples: !include examples/screens-example.raml
+                
+    displayName: Get Movie Screens by ID.
+
+
+
+
+/book:
+  /singlebooking:
+    is:
+       [headerTrait]
+    post:
+      body:
+        application/json:
+          type: SingleOrder
+      responses:
+        201:
+          body:
+            application/json:
+              examples: !include examples/single-order-example.raml
+              
+            
+
+  /grpbooking:
+    is:
+       [headerTrait]
+    post:
+      body:
+        application/json:
+          type: GroupOrder
+      responses:
+        201:
+          body:
+            application/json:
+              examples: !include examples/group-order-example.raml
+  

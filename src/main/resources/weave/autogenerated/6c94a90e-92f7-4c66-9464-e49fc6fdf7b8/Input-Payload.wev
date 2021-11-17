@@ -1,0 +1,10 @@
+%dw 2.0
+
+type auto_6c94a90e_92f7_4c66_9464_e49fc6fdf7b8_Input_Payload = {
+  orderId?: Number, 
+  seatNo: Array<String>, 
+  movieName: String, 
+  phoneNo: String, 
+  _?: Any
+}
+

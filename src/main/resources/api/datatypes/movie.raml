@@ -1,0 +1,16 @@
+#%RAML 1.0 DataType
+
+type: object
+properties: 
+  id?: integer
+  name: string
+  rating: number
+  image: string
+  category: 
+    enum:
+      - Action
+      - Adventure
+      - Comedy
+      - Drama
+      - Thriller
+      - Horror

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="a54a9c3f-4358-468e-a090-5cdf4c323a31">
+		<http:request-connection host="localhost" port="8088" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="8e5f7409-9ff7-4a86-aa8a-86893948092c" basePath="/movie" >
+		<http:request-connection host="localhost" port="8088" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="26e992b9-9d07-495e-9572-6ec536045950" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="fb67c506-d49f-4854-a00f-8abf30a80e4a">
+		<http:request-connection host="localhost" port="8088" >
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration3" doc:name="HTTP Request configuration" doc:id="5d44d9d2-59e2-41a6-a974-4e102c626c98" >
+		<http:request-connection host="localhost" port="8088" />
+	</http:request-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="632826b9-ae18-4cc8-87a8-6d3bfa1ad8e1" >
+		<wsc:connection wsdlLocation="http://www.dneonline.com/calculator.asmx?wsdl" service="Calculator" port="CalculatorSoap" address="http://www.dneonline.com/calculator.asmx" >
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<sub-flow name="preparepayload" doc:id="5b6fe354-6c37-440e-a36b-b70faace56b9" >
+		<set-payload value='#[{ "seat no":payload,&#10;   "movie name":vars.moviename,&#10;   "phone no":vars.mobnum&#10;}]' doc:name="Set Payload" doc:id="620429ad-f65a-4760-9c14-3c2f96990968" />
+	</sub-flow>
+	<flow name="getmovie" doc:id="c2603577-436b-46a3-bb2d-b1bda295ce3b" >
+		<http:listener doc:name="Listener" doc:id="2212a772-51ba-4e75-9f04-1b2a35a5aabc" config-ref="HTTP_Listener_config1" path="/movie"/>
+		<http:request method="GET" doc:name="Request" doc:id="ba56cbd6-38af-48c2-bba8-3580cec16968" config-ref="HTTP_Request_configuration" path="/movies">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"category" : "action",
+	"destination" : "mumbai"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="b0ef9b14-f3bf-4258-ae17-3035be18ac05" message="#[payload]"/>
+	</flow>
+	<flow name="singlebook" doc:id="58eb37cd-ab63-4545-bebc-d0ebf2b9367d" >
+		<http:listener doc:name="Listener" doc:id="bef190a8-fab8-4ca0-b71c-542cee870b07" config-ref="HTTP_Listener_config1" path="/singlebooking" allowedMethods="POST"/>
+		<set-payload doc:name="Set Payload" doc:id="e5d07448-8933-4eea-895f-5547addbecb2" value="payload"/>
+		<http:request method="POST" doc:name="Request" doc:id="768b23ef-a055-49fe-84bc-4ad744a39c91" config-ref="HTTP_Request_configuration2" path="/singlebooking">
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="730435fe-61c3-4524-b0ba-45029e6bb59b" message="payload"/>
+	</flow>
+	<flow name="groupbooking" doc:id="6c94a90e-92f7-4c66-9464-e49fc6fdf7b8" >
+		<http:listener doc:name="Listener" doc:id="4de6dca7-f71e-440a-9a57-a2d90491f93d" config-ref="HTTP_Listener_config1" path="/groupbooking"/>
+		<set-variable value="#[payload.movieName]" doc:name="movie name" doc:id="4410cc15-0809-450f-baba-bee1c0dcc8f0" variableName="moviename"/>
+		<set-variable value="#[payload.phoneNo]" doc:name="phone num" doc:id="298a2551-ad5c-44d3-ba5b-19d68229f96b" variableName="mobnum"/>
+		<set-payload value="#[payload.seatNo]" doc:name="Set Payload" doc:id="0b57d9a8-65e1-47dd-b97d-da40dd604df4" />
+		<foreach doc:name="For Each" doc:id="bef2897c-20ff-48c7-9a6e-842a1092a5d2" >
+			<flow-ref doc:name="Flow Reference" doc:id="3fff7b97-c1c4-4fd8-84e3-6791dc28bf99" name="preparepayload" />
+			<flow-ref doc:name="Flow Reference" doc:id="4d8578a9-b487-4038-aba8-9aa225e2caae" name="singlebook"/>
+		</foreach>
+		<flow-ref doc:name="Flow Reference" doc:id="c8b518d9-1946-4522-afef-9d47f3b5a324" name="preparepayload"/>
+		<http:request method="POST" doc:name="Request" doc:id="45919913-3ece-44b6-89f4-47d746556b8d" config-ref="HTTP_Request_configuration3" path="/groupbooking"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d855cc03-3806-4f46-bc97-4ce998fc6060" message="#[payload]"/>
+	</flow>
+	<flow name="orders" doc:id="cee00380-1c69-4265-981c-f2ae5ae30572" >
+		<http:listener doc:name="Listener" doc:id="18094ddc-c057-40fb-afac-09f153182de9" config-ref="HTTP_Listener_config1" path="/orders"/>
+		<ee:transform doc:name="Transform Message" doc:id="37740ce4-edc3-47b2-8149-5c815f945f4b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Add: {
+		ns0#intA: 22,
+		ns0#intB: 55
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="Add" doc:name="Consume" doc:id="c1067995-3216-4ba9-8fc0-751084596a67" config-ref="Web_Service_Consumer_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a51f3f19-c906-41e5-99db-5b96ba018a5b" message="cnsume operation successfull" />
+		<set-payload value='#[{&#10;  "invoice": {&#10;    "header": {&#10;      "customer_name": "vijay",&#10;      "customer_state": "US"&#10;    },&#10;    "items": [&#10;      {&#10;        "description": "Movie 1",&#10;        "quantity": "2",&#10;        "unit_price": "10"&#10;      },&#10;      {&#10;        "description": "Movie 2",&#10;        "quantity": "1",&#10;        "unit_price": "30"&#10;      }&#10;    ]&#10;  }&#10;}]' doc:name="Set Payload" doc:id="9b604282-6c3a-4ca9-ae6a-073b545214f0" />
+		<ee:transform doc:name="Transform Message" doc:id="431bffcc-4ed9-4d72-965a-4e1a9eadb2f6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+var tax = 0.085
+var discount = 0.05
+fun getSubtotal (items) = items reduce ((item, accumulator = 0) ->
+        accumulator + (item.unit_price * item.quantity * (1 - discount)))
+---
+invoice: {
+    header: payload.invoice.header,
+    items: { (payload.invoice.items map {
+        item : {
+            description: $.description,
+            quantity: $.quantity,
+            unit_price: $.unit_price,
+            discount: (discount * 100) as Number ++ "%",
+            subtotal: $.unit_price * $.quantity * (1 - discount)
+        }
+    }) },
+    totals:
+    {
+        subtotal: getSubtotal(payload.invoice.items ),
+        tax: (tax * 100) as Number ++ "%",
+        total: getSubtotal(payload.invoice.items ) * (1 + tax)
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="9569a00d-2b05-4c20-af82-cdb6982de0ea" />
+		<ee:transform doc:name="Transform Message" doc:id="e2781248-e1f9-4744-bf31-8f745c1a0990" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="idis3" doc:id="2056ae4c-61a3-48dc-b44d-2e88ab070d07" >
+		<set-payload value='#[{&#10;    "name": "Movie 3",&#10;    "rating": 2.5,&#10;    "image": "image3.jpg",&#10;    "category": "Comedy"&#10;  }]' doc:name="Set Payload" doc:id="c09a567d-6a48-4728-8c5a-1e13e0582f48" />
+		<ee:transform doc:name="Transform Message" doc:id="40a9fed9-7863-4534-b40c-c87a6ee445f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="1f9bcbec-6bd5-4f2a-a5c4-d54b1bc2b9a2" />
+	</sub-flow>
+	<sub-flow name="idis2" doc:id="30f4389d-31cb-48bd-b75b-b399a4c8db4d" >
+		<set-payload value='#[{&#10;    "name": "Movie 2",&#10;    "rating": 2.5,&#10;    "image": "image2.jpg",&#10;    "category": "Comedy"&#10;  }]' doc:name="Set Payload" doc:id="eb321dca-79ea-4203-8c78-efd2c596f60f" />
+		<ee:transform doc:name="Transform Message" doc:id="7df9ec0a-7ac8-480d-a550-fd751267053f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7f0fe63e-2a57-4f15-a400-6c4a012b0676" />
+	</sub-flow>
+	<sub-flow name="idis1" doc:id="b18a68ef-74d1-4ef2-b3fd-fe0a7081948a" >
+		<set-payload value='#[{&#10;    "name": "Movie 1",&#10;    "rating": 2.5,&#10;    "image": "image2.jpg",&#10;    "category": "Comedy"&#10;  }]' doc:name="Set Payload" doc:id="e973119a-f017-4246-804d-283b6cc97dfd" />
+		<ee:transform doc:name="Transform Message" doc:id="4a4f6c9b-97d1-4554-8fa2-ac861d98e58d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="19498cc4-bd2f-4ea6-9b96-97437f41ff4a" />
+	</sub-flow>
+	<flow name="moviebyid" doc:id="9385d237-31c1-4d9e-a291-15683defbdf7" >
+		<http:listener doc:name="Listener" doc:id="448bfce1-e4ad-48ed-a917-d033a331eaa1" config-ref="HTTP_Listener_config1" path="/movie/{ID}"/>
+		<choice doc:name="Choice" doc:id="aa3c5376-e855-4650-aa7c-326572aebbdd" >
+			<when expression='#[attributes.uriParams.ID == "1"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="ae706e99-bce2-494a-b8c3-7736b810616f" name="idis1"/>
+			</when>
+			<when expression='#[attributes.uriParams.ID == "2"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="3f1cc7ea-4e05-4877-acd4-d78127c7b0ce" name="idis2"/>
+			</when>
+			<when expression='#[attributes.uriParams.ID == "3"]'>
+				<flow-ref doc:name="Flow Reference" doc:id="3309e054-4221-48f6-88c2-d06e25c7cbec" name="idis3"/>
+			</when>
+			<otherwise>
+				<set-payload value="movie not available" doc:name="Set Payload" doc:id="20474038-527a-4262-b78c-6ffb6153474a" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="eb2d9b35-6990-4d7f-bbb2-8ae104972a18" />
+	</flow>
+</mule>
