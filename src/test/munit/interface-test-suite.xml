@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="interface-test-suite.xml" />
+	<munit:test name="interface-test-suite-bookmyshow-mainTest" doc:id="cf6783a9-3871-4d25-a13e-39547fd88db6" description="Test" ignore="true">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookmyshow-main" doc:id="1e551af0-458b-48a8-b4a3-f9e25ae340b6" name="bookmyshow-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="interface-test-suite-bookmyshow-consoleTest" doc:id="312f60d1-6e79-4450-a0d4-0b09acd97403" description="Test" ignore="true">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookmyshow-console" doc:id="116a7812-d279-44d7-a71c-11c04c34ba0f" name="bookmyshow-console"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\movie:bookmyshow-configTest" doc:id="55cbc255-d969-489d-ae16-a4ef48a4702f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0dea35db-9bd9-43b7-b754-9fbb39416c89" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ba56cbd6-38af-48c2-bba8-3580cec16968" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('movie-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\movie:bookmyshow-config" doc:id="76838f40-8e9e-406b-bcce-f461b138c08a" name="get:\movie:bookmyshow-config"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\movie\(ID):bookmyshow-configTest" doc:id="9a0afd2e-157f-4b4d-8028-44dc76c6cea9" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ed521a98-d8e3-4398-9829-c0c3695fd22c" processor="choice" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aa3c5376-e855-4650-aa7c-326572aebbdd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('movie-screen-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\movie\(ID):bookmyshow-config" doc:id="aa14adf8-ae15-4cee-a41c-9abd57c9c6bc" name="get:\movie\(ID):bookmyshow-config"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\book\grpbooking:application\json:bookmyshow-configTest" doc:id="e6aa6f2f-08ff-449c-9eac-b0790ed31af7" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5be6b15a-81a0-4637-90c8-79d4b812f2cc" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4d8578a9-b487-4038-aba8-9aa225e2caae" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('singlebooking-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0995f353-8951-4b2f-9d37-5aa234ca5197" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="45919913-3ece-44b6-89f4-47d746556b8d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('groupbooking-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f2b2b1c3-4f3f-482d-a3db-3f980fd4e290">
+				<munit:payload value='{&#10;  "orderId": 2,&#10;  "phoneNo": "98927443",&#10;  "movieName": "Movie 1",&#10;  "seatNo": [&#10;    "A7",&#10;    "B9"&#10;  ]&#10;}' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\book\grpbooking:application\json:bookmyshow-config" doc:id="8fbfe082-9138-4dcf-afe5-265cf7ad18e9" name="post:\book\grpbooking:application\json:bookmyshow-config"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\book\singlebooking:application\json:bookmyshow-configTest" doc:id="1edfdfb8-f1c9-4e30-8bf4-7a624126457b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f0012f7a-719e-4286-9f25-4c6d1312720e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="768b23ef-a055-49fe-84bc-4ad744a39c91" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+				<munit-tools:payload value="#[MunitTools::getResourceAsString('singlebooking-response-payload.json')]" mediaType="application/json" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\book\singlebooking:application\json:bookmyshow-config" doc:id="e42aceff-e94c-4cfd-a1c4-f390e0dd5a3d" name="post:\book\singlebooking:application\json:bookmyshow-config"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

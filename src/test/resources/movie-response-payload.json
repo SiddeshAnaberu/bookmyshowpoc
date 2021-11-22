@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Movie 1",
+    "rating": 4.2,
+    "image": "image1.jpg",
+    "category": "Drama"
+  },
+  {
+    "name": "Movie 2",
+    "rating": 2.5,
+    "image": "image2.jpg",
+    "category": "Comedy"
+  }
+]

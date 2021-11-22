@@ -1,0 +1,9 @@
+{
+  "orderId": 2,
+  "phoneNo": 98927443,
+  "movieName": "Movie 1",
+  "seatNo": [
+    "A7",
+    "B9"
+  ]
+}

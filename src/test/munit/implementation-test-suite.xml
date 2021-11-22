@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-preparepayloadTest" doc:id="c60efd5f-1865-4e16-8d78-1099586e174c" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to preparepayload" doc:id="64cfd17a-6dac-4c8f-b4bc-2a0dd6882f80" name="preparepayload"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getmovieTest" doc:id="8008ffe7-51a7-4586-95a5-5b94e890c357" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b8beac0d-0bae-4075-93ec-0a89748badd2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ba56cbd6-38af-48c2-bba8-3580cec16968" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('movie-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getmovie" doc:id="47b90bdd-985d-4684-8dbe-d0643326dd67" name="getmovie"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-singlebookTest" doc:id="e80a2b15-77ea-4181-b3c6-ce701abb7c4d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="91d6d9fd-95ca-4b42-b43d-d5075f6a7877" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="768b23ef-a055-49fe-84bc-4ad744a39c91" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('singlebooking-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to singlebook" doc:id="cfcc2dc0-4290-4fcd-be6f-22d73e228115" name="singlebook"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-groupbookingTest" doc:id="13c974db-f1d0-44e1-b593-b6ff63409411" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c18fefea-8400-4381-8caa-72f819829324" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4d8578a9-b487-4038-aba8-9aa225e2caae" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('singlebooking-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="45671a4d-6449-493b-9d8c-afe88fbab85e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="45919913-3ece-44b6-89f4-47d746556b8d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('groupbooking-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3fa64cb1-4c27-4d53-8491-3ff449d09a02" >
+				<munit:payload value='{&#10;  "orderId": 2,&#10;  "phoneNo": "98927443",&#10;  "movieName": "Movie 1",&#10;  "seatNo": [&#10;    "A7",&#10;    "B9"&#10;  ]&#10;}' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to groupbooking" doc:id="6af0e4f1-4e99-47d9-8deb-486b0b4324a0" name="groupbooking"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="412bd599-3226-4eaa-bd16-bfa29431ecdc" processor="flow-ref" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4d8578a9-b487-4038-aba8-9aa225e2caae" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-ordersTest" doc:id="93a461bf-04d9-4e32-a07e-e696f17225a0" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to orders" doc:id="c2699424-d6ff-430b-89d5-cc7dccb33ad3" name="orders"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-idis3Test" doc:id="e323b03b-1968-4e94-9a91-e9782f292512" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to idis3" doc:id="51f1d67d-837e-4626-92a7-54ae36a9d8b2" name="idis3"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-idis2Test" doc:id="32b4edfe-4eb0-4b46-b77a-0e2dc01cdd81" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to idis2" doc:id="c4f11bab-11dd-4278-95ce-7758892f1c1e" name="idis2"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-idis1Test" doc:id="94e7a911-ab06-4442-9b8e-95e679c61ea7" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to idis1" doc:id="9e037885-2709-4192-ac04-fcc19d37b1c2" name="idis1"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="implementation-test-suite-moviebyidTest" doc:id="9b720253-d13f-46b3-9b06-a4087eace32a" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8318d585-3861-421b-a0d1-e15721cbb376" processor="choice">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aa3c5376-e855-4650-aa7c-326572aebbdd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('movie-screen-response-payload.json')]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to moviebyid" doc:id="7f0818d4-cd4e-4f14-8905-e8d99d63825b" name="moviebyid"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
