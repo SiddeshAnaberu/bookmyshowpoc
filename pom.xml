@@ -40,9 +40,7 @@
 						<environment>Sandbox</environment>
 						<workers>1</workers>
 						<workerType>Micro</workerType>
-						<properties>
-							<key>value</key>
-						</properties>
+						
 					</cloudHubDeployment>
 					<classifier>mule-application</classifier>
 				</configuration>
