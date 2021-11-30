@@ -15,6 +15,12 @@
             <SizeBasedTriggeringPolicy size="10 MB"/>
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
+        
+        <Http name="Splunk" url="http://localhost:8088/services/collector/raw">
+<Property name="Authorization" value="Splunk 2b72790d-0650-401a-bdbd-190bf20818cc"></Property>
+<PatternLayout pattern="%m%n"></PatternLayout>
+<!--<TrustStore location="<path to trustore>" password="<truststore-password>"/> -->
+</Http>
     </Appenders>
 
     <Loggers>
@@ -28,6 +34,8 @@
 
         <AsyncRoot level="INFO">
             <AppenderRef ref="file"/>
+            <AppenderRef ref="Splunk"/>
+            
         </AsyncRoot>
     </Loggers>
 
